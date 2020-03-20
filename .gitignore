@@ -1,6 +1,10 @@
 # Prerequisites
 *.d
 
+/build
+/devel
+.catkin_workspace
+
 # Compiled Object files
 *.slo
 *.lo
