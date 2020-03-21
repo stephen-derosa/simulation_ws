@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Space Robotics Challenge (2)
+	NASA-JSC
+	Copyright (c) 2019, All Rights Reserved
+	Unauthorized distribution strictly prohibited
+
+  Launch Qualification Round 3
+-->
+<launch>
+
+  <!-- Using the MKS unit system -->
+  <arg name="use_gui"/>
+  <arg name="spawning_delay"/>
+  <param name="spawning_delay" value="$(arg spawning_delay)" />
+
+  <include file="$(find launch_qual_rounds)/launch/qual_3/round_3_world.launch">
+    <arg name="gui" value="$(arg use_gui)"/>
+  </include>
+
+  <arg name="apriori_object_name" value="cube_sat"/>
+  <arg name="rover_object_name" value="scout_1"/>
+
+  <rosparam file="$(find launch_qual_rounds)/config/common.yaml" command="load"/>
+  <rosparam file="$(find launch_qual_rounds)/config/qual_3.yaml" command="load"/>
+  <rosparam file="$(find launch_qual_rounds)/config/config_base.yaml" command="load"/>
+  <param name = "volatile_sdf_path"    value = "$(find qual_rounds)/data/volatile_sdf" />
+  <param name = "volatile_traits_path" value = "$(find qual_rounds)/data/volatile_traits.csv" />
+  <param name = "kill_script_path"     value = "$(find qual_rounds)/scripts/killall.py" />
+  <param name = "bag_file_path"        value = "$(find qual_rounds)/bag_files/attempt_0.bag.active" />
+  <param name = "apriori_object"       value = "$(arg apriori_object_name)" />
+  <param name = "rover_object"         value = "$(arg rover_object_name)" />
+
+  <group ns="$(arg rover_object_name)">
+    <param name="robot_description" command="$(find xacro)/xacro $(find srcp2_models)/models/robots/small_rover/urdf/scout/scout.xacro" />
+    <param name="tf_prefix" value="$(arg rover_object_name)_tf" />
+
+    <include file="$(find launch_qual_rounds)/launch/one_robot.launch">
+      <arg name="init_pose" value="-x 0 -y -10 -z 15" />
+      <arg name="robot_name" value="$(arg rover_object_name)" />
+      <arg name="spawn_rover_name" value="spawn_$(arg rover_object_name)" />
+    </include>
+
+    <include file="$(find small_rover_control)/launch/small_rover_scout_controller.launch">
+      <arg name="robot_name" value="$(arg rover_object_name)" />
+      <arg name="controller_spawner_name" value="$(arg rover_object_name)_controller_manager"/>
+      <arg name="node_name" value="$(arg rover_object_name)_control" />
+      <arg name="robot_state_publisher_name" value="$(arg rover_object_name)_state_publisher"/>
+    </include>
+  </group>
+
+  <param name="apriori_object" value="$(arg apriori_object_name)"/>
+  <param name="rover_object" value="$(arg rover_object_name)"/>
+
+</launch>
