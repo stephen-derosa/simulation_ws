@@ -5,6 +5,8 @@
 /devel
 .catkin_workspace
 
+*.vscode*
+
 # Compiled Object files
 *.slo
 *.lo
